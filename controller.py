@@ -23,8 +23,6 @@ def selectprog(number, donnees, argent):
         print('prout')
 
 def brutalforce(donnees, argent):
-    with open('brutalsolutions.csv', 'w'):
-        pass
     keys = ['benefice']
     for action in donnees:
         keys.append(action.name)
@@ -70,33 +68,40 @@ def denombrement(list_actions, money, res):
 
 def dynamicprog(donnee, argent):
     money = round(float(argent) * 100)
-    tab = pd.read_csv('tableau_prog_dynamique.csv')
+    creationtab(donnee, money)
+    tab = pd.read_csv('tableau_prog_dynamique.csv', header = None)
     soluc = resolution(tab, money, len(donnee)-1, donnee, [])
     return Solution(soluc)
 
 def creationtab(donnee, money):
-    df = pd.DataFrame(0, columns=range(len(donnee)), index = range(money+1))
-    print(df)
+    with open('tableau_prog_dynamique.csv', 'w'):
+        pass
     for i, action in enumerate(donnee):
+        newline = []
         for n in range(money+1):
             if i==0:
                 if n >= action.cent_price:
-                    df.loc[df.index[n], 0] = action.cent_earned
+                    newline.append(action.cent_earned)
+                else:
+                    newline.append(0)
             elif n >= action.cent_price:
-                df.loc[df.index[n], i] = max(df.loc[df.index[n], i-1],df.loc[df.index[n-action.cent_price], i-1]+action.cent_earned)
+                newline.append(max(lastline[n], lastline[n-action.cent_price]+action.cent_earned))
             else:
-                df.loc[df.index[n], i] = df.loc[df.index[n], i - 1]
-    print(df)
-    return df
+                newline.append(lastline[n])
+        lastline = list(newline)
+        with open('tableau_prog_dynamique.csv', 'a') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(newline)
 
 def resolution(df, n, i, donnee, res):
+    print(df)
     print('n=', n, 'i=', i)
-    if df.loc[df.index[n], i] == 0:
+    if df.loc[df.index[i], n] == 0:
         return res
     elif i == 0:
         res.append(donnee[i])
         return res
-    elif df.loc[df.index[n], i] == df.loc[df.index[n], i-1]:
+    elif df.loc[df.index[i], n] == df.loc[df.index[i-1], n]:
         return resolution(df, n, i-1, donnee, res)
     else:
         res.append(donnee[i])
