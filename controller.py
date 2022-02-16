@@ -8,7 +8,10 @@ def getdonnee(file) :
     data = pd.read_csv("donnees/" + file)
     liste_actions = []
     for item in data.values:
-        liste_actions.append(Action(item))
+        if item[1]<=0:
+            pass
+        else:
+            liste_actions.append(Action(item))
     return liste_actions
 
 def selectprog(number, donnees, argent):
@@ -88,6 +91,7 @@ def creationtab(donnee, money):
                 newline.append(max(lastline[n], lastline[n-action.cent_price]+action.cent_earned))
             else:
                 newline.append(lastline[n])
+        print(i, len(newline))
         lastline = list(newline)
         with open('tableau_prog_dynamique.csv', 'a') as csv_file:
             csv_writer = csv.writer(csv_file)

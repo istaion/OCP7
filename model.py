@@ -3,9 +3,9 @@ class Action:
         self.name = action[0]
         self.price = round(action[1], 2)
         self.profit = round(action[2], 2)
-        self.earned = round(action[1] * action[2], 2)
+        self.earned = round(action[1] * action[2]/100, 2)
         self.cent_price = int(round(action[1] * 100))
-        self.cent_earned = int(round(action[1] * action[2] * 100))
+        self.cent_earned = int(round(action[1] * action[2]))
 
     def __repr__(self):
         return self.name
