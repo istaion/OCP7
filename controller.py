@@ -44,7 +44,7 @@ def brutalforce(donnees, argent):
 
 
 def denombrement(list_actions, money, res):
-    money = int(money)
+    money = float(money)
     if len(list_actions) == 0:  # S'il n'y a plus d'actions à envisager on calcul le bénéfice et on ajoute la solution au csv
         benefice = 0
         for action in res:
@@ -69,3 +69,36 @@ def denombrement(list_actions, money, res):
             denombrement(newlist, money - action_selected.price, res1)
 
 def dynamicprog(donnee, argent):
+    money = round(float(argent) * 100)
+    tab = pd.read_csv('tableau_prog_dynamique.csv')
+    soluc = resolution(tab, money, len(donnee)-1, donnee, [])
+    return Solution(soluc)
+
+def creationtab(donnee, money):
+    df = pd.DataFrame(0, columns=range(len(donnee)), index = range(money+1))
+    print(df)
+    for i, action in enumerate(donnee):
+        for n in range(money+1):
+            if i==0:
+                if n >= action.cent_price:
+                    df.loc[df.index[n], 0] = action.cent_earned
+            elif n >= action.cent_price:
+                df.loc[df.index[n], i] = max(df.loc[df.index[n], i-1],df.loc[df.index[n-action.cent_price], i-1]+action.cent_earned)
+            else:
+                df.loc[df.index[n], i] = df.loc[df.index[n], i - 1]
+    print(df)
+    return df
+
+def resolution(df, n, i, donnee, res):
+    print('n=', n, 'i=', i)
+    if df.loc[df.index[n], i] == 0:
+        return res
+    elif i == 0:
+        res.append(donnee[i])
+        return res
+    elif df.loc[df.index[n], i] == df.loc[df.index[n], i-1]:
+        return resolution(df, n, i-1, donnee, res)
+    else:
+        res.append(donnee[i])
+        return resolution(df, n-donnee[i].cent_price, i-1, donnee, res)
+
