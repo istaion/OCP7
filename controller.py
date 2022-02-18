@@ -14,27 +14,31 @@ def getdonnee(file) :
             liste_actions.append(Action(item))
     return liste_actions
 
-def selectprog(number, donnees, argent):
+def selectprog(number, donnees, money):
+    money = float(money)
     t1 = time()
-    if number == '1':
-        res = brutalforce(donnees, argent)
+    if number == "1":
+        res = brutalforce(donnees, money)
         return (res, time()-t1)
-    elif number == '2':
-        res = dynamicprog(donnees, argent)
+    elif number == "2":
+        res = dynamicprog(donnees, money)
+        return (res, time() - t1)
+    elif number == "3":
+        res = glouton(donnees, money)
         return (res, time() - t1)
     else:
         print('prout')
 
 def brutalforce(donnees, argent):
-    keys = ['benefice']
+    keys = ["benefice"]
     for action in donnees:
         keys.append(action.name)
-    with open('brutalsolutions.csv', 'w') as csvfile:
+    with open("brutalsolutions.csv", "w") as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(keys)
     denombrement(donnees, argent, [])
-    df = pd.read_csv('brutalsolutions.csv')
-    df = df.sort_values(by = 'benefice', ascending=False)
+    df = pd.read_csv("brutalsolutions.csv")
+    df = df.sort_values(by = "benefice", ascending=False)
     soluc = []
     for action in donnees:
         if action.is_in_solution(df.iloc[0]):
@@ -45,7 +49,6 @@ def brutalforce(donnees, argent):
 
 
 def denombrement(list_actions, money, res):
-    money = float(money)
     if len(list_actions) == 0:  # S'il n'y a plus d'actions à envisager on calcul le bénéfice et on ajoute la solution au csv
         benefice = 0
         for action in res:
@@ -53,7 +56,7 @@ def denombrement(list_actions, money, res):
         value = [benefice]
         for action in res:
             value.append(action[1])
-        with open('brutalsolutions.csv', 'a') as csv_file:
+        with open("brutalsolutions.csv", "a") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(value)
     else:  # On selection la première action et on réapelle la fonction sans l'acheter et en l'achetant s'il reste
@@ -72,12 +75,12 @@ def denombrement(list_actions, money, res):
 def dynamicprog(donnee, argent):
     money = round(float(argent) * 100)
     creationtab(donnee, money)
-    tab = pd.read_csv('tableau_prog_dynamique.csv', header = None)
+    tab = pd.read_csv("tableau_prog_dynamique.csv", header = None)
     soluc = resolution(tab, money, len(donnee)-1, donnee, [])
     return Solution(soluc)
 
 def creationtab(donnee, money):
-    with open('tableau_prog_dynamique.csv', 'w'):
+    with open("tableau_prog_dynamique.csv", "w"):
         pass
     for i, action in enumerate(donnee):
         newline = []
@@ -91,15 +94,12 @@ def creationtab(donnee, money):
                 newline.append(max(lastline[n], lastline[n-action.cent_price]+action.cent_earned))
             else:
                 newline.append(lastline[n])
-        print(i, len(newline))
         lastline = list(newline)
-        with open('tableau_prog_dynamique.csv', 'a') as csv_file:
+        with open("tableau_prog_dynamique.csv", "a") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(newline)
 
 def resolution(df, n, i, donnee, res):
-    print(df)
-    print('n=', n, 'i=', i)
     if df.loc[df.index[i], n] == 0:
         return res
     elif i == 0:
@@ -111,3 +111,11 @@ def resolution(df, n, i, donnee, res):
         res.append(donnee[i])
         return resolution(df, n-donnee[i].cent_price, i-1, donnee, res)
 
+def glouton(donnee, money):
+    res = []
+    donnee.sort(reverse = True)
+    for action in donnee:
+        if action.price <= money:
+            money -= action.price
+            res.append(action)
+    return Solution(res)
