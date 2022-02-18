@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.idea/
+donnees/
+tableau_prog_dynamique.csv
