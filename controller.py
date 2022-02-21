@@ -17,17 +17,15 @@ def getdonnee(file) :
 def selectprog(number, donnees, money):
     money = float(money)
     t1 = time()
-    if number == "1":
+    if number == 1:
         res = brutalforce(donnees, money)
         return (res, time()-t1)
-    elif number == "2":
+    elif number == 2:
         res = dynamicprog(donnees, money)
         return (res, time() - t1)
-    elif number == "3":
+    else :
         res = glouton(donnees, money)
         return (res, time() - t1)
-    else:
-        print('prout')
 
 def brutalforce(donnees, argent):
     keys = ["benefice"]
@@ -119,3 +117,10 @@ def glouton(donnee, money):
             money -= action.price
             res.append(action)
     return Solution(res)
+
+def error_input(res, n, m):
+    res = int(res)
+    while res < n or res > m:
+        print("veuillez entrer un nombre entre ", n, " et ", m,":")
+        res = int(input())
+    return res

@@ -4,16 +4,19 @@ from controller import *
 
 def acceuil():
     fichiers = [f for f in listdir("donnees") if isfile(join("donnees", f))]
+    if len(fichiers) == 0:
+        print("Veuiller ajouter un ficher csv avec les actions disponible dans le dossier donnees.")
+        exit()
     print(fichiers)
     for i, file in enumerate(fichiers):
         print(i, " :", file)
-    n=int(input("Veuiller selectioner le fichier de données d'action :"))
+    n=int(error_input(input("Veuiller selectioner le fichier de données d'action :"),0,len(fichiers)-1))
     programmes(getdonnee(fichiers[n]), input("combien d'argent voulez vous dépenser ? "))
 
 def programmes(données, argent):
     print("Quel programme voulez vous utiliser ?\n Pour la méthode brutale tapez 1\n Pour la programation dynamique"
           " taper 2\n Pour l'algorithme glouton taper 3")
-    n = input()
+    n = error_input(input(), 1, 3)
     print("début du calcul...")
     affichage(selectprog(n, données, argent))
 
