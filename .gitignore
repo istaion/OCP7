@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 .idea/
-donnees/
 tableau_prog_dynamique.csv
+brutalsolutions.csv

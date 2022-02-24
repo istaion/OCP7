@@ -1,4 +1,7 @@
 class Action:
+    """
+    Object action with price in euros or cent, profit in percentage, money earned in euros or cent
+    """
     def __init__(self, action):
         self.name = action[0]
         self.price = round(action[1], 2)
@@ -11,12 +14,57 @@ class Action:
         return self.name
 
     def is_in_solution(self, solution):
+        """
+        check if the action is purchased in the solution
+        :param solution: pandas data with the best possibility
+        :return: boolean : true for purchase
+        """
         if solution[self.name] == 1:
             return True
         else:
             return False
 
+    def __lt__(self, other):
+        if self.profit < other.profit:
+            return True
+        else:
+            return False
+
+    def __le__(self, other):
+        if self.profit <= other.profit:
+            return True
+        else:
+            return False
+
+    def __eq__(self, other):
+        if self.profit == other.profit:
+            return True
+        else:
+            return False
+
+    def __ne__(self, other):
+        if self.profit != other.profit:
+            return True
+        else:
+            return False
+
+    def __gt__(self, other):
+        if self.profit > other.profit:
+            return True
+        else:
+            return False
+
+    def __ge__(self, other):
+        if self.profit >= other.profit:
+            return True
+        else:
+            return False
+
+
 class Solution:
+    """
+    list of actions to buy. Calcul the benefice and the price.
+    """
     def __init__(self, actions):
         self.actions = actions
         benefice = 0
